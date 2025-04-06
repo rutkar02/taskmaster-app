@@ -1,14 +1,24 @@
-import { Component } from '@angular/core';
-
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { AuthService } from '../../../app/services/auth.service';
 @Component({
   selector: 'app-dashboard',
-  imports: [],
   templateUrl: './dashboard.component.html',
-  styleUrl: './dashboard.component.scss'
 })
-export class DashboardComponent {
-    dummyTasks=[
-      {title: 'Task1', description: 'Code for 4 hours'},
-      {title: 'Task2', description: 'Read book for an hour'},
-    ];
+export class DashboardComponent implements OnInit{
+    constructor(
+      private route: ActivatedRoute,
+      private authService: AuthService,
+      private router: Router,
+    ) {}
+
+    ngOnInit(): void {
+      this.route.queryParams.subscribe((params) => {
+        const token = params['token'];
+        if(token){
+          this.authService.setToken(token); // stores token
+          this.router.navigate([],{queryParams: {}}); // clears token from URL for better clean URL look
+        }
+      })
+    }
 }
