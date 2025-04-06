@@ -1,0 +1,15 @@
+<div class="dashboard">
+    <button class="add-task-btn">+ Add Task</button>
+  
+    <div class="task-list">
+      <div class="task-card" *ngFor="let task of dummyTasks">
+        <h3>{{ task.title }}</h3>
+        <p>{{ task.description }}</p>
+        <div class="actions">
+          <button>Edit</button>
+          <button>Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
