@@ -1,15 +1,19 @@
 <div class="dashboard">
-    <button class="add-task-btn">+ Add Task</button>
-  
-    <div class="task-list">
-      <div class="task-card" *ngFor="let task of dummyTasks">
-        <h3>{{ task.title }}</h3>
-        <p>{{ task.description }}</p>
-        <div class="actions">
-          <button>Edit</button>
-          <button>Delete</button>
-        </div>
+  <h1>Welcome to Dashboard</h1>
+
+  <div class="add-task-form">
+    <input [(ngModel)]="newTask.title" placeholder="Task Title" />
+    <input [(ngModel)]="newTask.description" placeholder="Task Description" />
+    <button (click)="addTask()">+ Add Task</button>
+  </div>
+
+  <div class="task-list">
+    <div class="task-card" *ngFor="let task of tasks">
+      <h3>{{ task.title }}</h3>
+      <p>{{ task.description }}</p>
+      <div class="actions">
+        <button (click)="deleteTask(task._id)">Delete</button>
       </div>
     </div>
   </div>
-  
+</div>
