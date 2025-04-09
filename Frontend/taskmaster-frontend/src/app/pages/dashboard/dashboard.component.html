@@ -1,19 +1,31 @@
 <div class="dashboard">
   <h1>Welcome to Dashboard</h1>
-
-  <div class="add-task-form">
-    <input [(ngModel)]="newTask.title" placeholder="Task Title" />
-    <input [(ngModel)]="newTask.description" placeholder="Task Description" />
-    <button (click)="addTask()">+ Add Task</button>
-  </div>
+  <button class="add-task-btn" (click)="addTask()">+ Add Task</button>
 
   <div class="task-list">
     <div class="task-card" *ngFor="let task of tasks">
-      <h3>{{ task.title }}</h3>
-      <p>{{ task.description }}</p>
-      <div class="actions">
-        <button (click)="deleteTask(task._id)">Delete</button>
-      </div>
+      <ng-container *ngIf="editedTaskId !== task._id; else editMode">
+        <h3>{{ task.title }}</h3>
+        <p>{{ task.description }}</p>
+        <p>Status: {{ task.status }}</p>
+        <div class="actions">
+          <button (click)="editTask(task)">Edit</button>
+          <button (click)="deleteTask(task._id)">Delete</button>
+        </div>
+      </ng-container>
+
+      <ng-template #editMode>
+        <input [(ngModel)]="editTitle" placeholder="Title" />
+        <input [(ngModel)]="editDescription" placeholder="Description" />
+        <select [(ngModel)]="editStatus">
+          <option value="pending">Pending</option>
+          <option value="completed">Completed</option>
+        </select>
+        <div class="actions">
+          <button (click)="updateTask(task._id)">Save</button>
+          <button (click)="cancelEdit()">Cancel</button>
+        </div>
+      </ng-template>
     </div>
   </div>
 </div>

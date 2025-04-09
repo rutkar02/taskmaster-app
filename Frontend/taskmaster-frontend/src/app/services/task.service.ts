@@ -1,6 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { Task } from '../models/task.model'
 
 @Injectable({
   providedIn: 'root'
@@ -24,8 +25,8 @@ export class TaskService {
     return this.http.post(this.apiUrl, task,{headers: this.getAuthHeaders()});
   }
 
-  updateTask(id: string, task: any): Observable<any> {
-    return this.http.put(`${this.apiUrl}/${id}`, task, {headers: this.getAuthHeaders()});
+  updateTask(id: string, updatedData: Partial<Task>): Observable<Task> {
+    return this.http.put<Task>(`${this.apiUrl}/tasks/${id}`, updatedData);
   }
 
   deleteTask(id: string): Observable<any> {

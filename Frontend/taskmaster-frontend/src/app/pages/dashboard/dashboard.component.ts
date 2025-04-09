@@ -21,6 +21,11 @@ export class DashboardComponent implements OnInit {
     private taskService: TaskService
   ) {}
 
+  editedTaskId: string | null = null;
+  editTitle: string = '';
+  editDescription: string = '';
+  editStatus: 'pending' | 'completed' = 'pending';
+
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
       const token = params['token'];
@@ -58,6 +63,33 @@ export class DashboardComponent implements OnInit {
         this.tasks = this.tasks.filter((task) => task._id !== taskId);
       },
       error: (err) => console.error('Delete failed', err),
+    });
+  }
+
+  editTask(task: Task): void {
+    this.editedTaskId = task._id;
+    this.editTitle = task.title;
+    this.editDescription = task.description;
+    this.editStatus = task.status;
+  }
+
+  cancelEdit(): void{
+    this.editedTaskId = null;
+  }
+
+  updateTask(id: string): void{
+    const updated = {
+      title: this.editTitle,
+      description: this.editDescription,
+      status: this.editStatus
+    };
+
+    this.taskService.updateTask(id, updated).subscribe({
+      next: () =>{
+        this.loadTasks(); // refreshes
+        this.cancelEdit(); // exit edit mode
+      },
+      error: err => console.error(err)
     });
   }
 }
