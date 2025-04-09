@@ -1,7 +1,12 @@
 <div class="dashboard">
   <h1>Welcome to Dashboard</h1>
-  <button class="add-task-btn" (click)="addTask()">+ Add Task</button>
-
+  <button class="add-task-btn" (click)="openModal()">+ Add Task</button>
+  <app-add-task-modal
+    *ngIf="showModal"
+    (taskAdded)="onTaskAdded()"
+    (closeModal)="closeModal()"
+  ></app-add-task-modal>
+  
   <div class="task-list">
     <div class="task-card" *ngFor="let task of tasks">
       <ng-container *ngIf="editedTaskId !== task._id; else editMode">

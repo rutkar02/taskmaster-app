@@ -25,6 +25,7 @@ export class DashboardComponent implements OnInit {
   editTitle: string = '';
   editDescription: string = '';
   editStatus: 'pending' | 'completed' = 'pending';
+  showModal = false;
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
@@ -91,5 +92,17 @@ export class DashboardComponent implements OnInit {
       },
       error: err => console.error(err)
     });
+  }
+
+  openModal(){
+    this.showModal = true;
+  }
+
+  closeModal(){
+    this.showModal = false;
+  }
+
+  onTaskAdded(){
+    this.loadTasks();
   }
 }
