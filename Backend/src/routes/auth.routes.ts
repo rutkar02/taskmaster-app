@@ -14,7 +14,11 @@ router.get(
         const token = jwt.sign({ id: user.id, email: user.emails[0].value}, process.env.JWT_SECRET!,{
             expiresIn: '1h',
         });
-        res.redirect(`http://localhost:4200/dashboard?token=${token}`);
+        res.redirect(`http://localhost:4200/?token=${token}`);
+
+        // console.log("User after Google Auth:", req.user);
+        // console.log("Token being sent:", token);
+
     }
 );
 

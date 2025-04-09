@@ -3,29 +3,34 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../../app/services/auth.service';
 import { TaskService } from '../../../app/services/task.service';
 import { Task } from '../../../app/models/task.model';
+import { CommonModule } from '@angular/common'; // 👈 for *ngIf, *ngFor
+import { FormsModule } from '@angular/forms'; // 👈 for [(ngModel)]
+import { AddTaskModalComponent } from '../../components/add-task-modal/add-task-modal.component';
+
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
+  imports: [CommonModule, FormsModule, AddTaskModalComponent],  // ✅ add this
 })
 export class DashboardComponent implements OnInit {
   tasks: Task[] = [];
   newTask: Partial<Task> = {
     title: '',
-    description: ''
-  }
+    description: '',
+  };
+  editedTaskId: string | null = null;
+  editTitle: string = '';
+  editDescription: string = '';
+  editStatus: 'pending' | 'completed' = 'pending';
+  showModal = false;
+
   constructor(
     private route: ActivatedRoute,
     private authService: AuthService,
     private router: Router,
     private taskService: TaskService
   ) {}
-
-  editedTaskId: string | null = null;
-  editTitle: string = '';
-  editDescription: string = '';
-  editStatus: 'pending' | 'completed' = 'pending';
-  showModal = false;
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
@@ -47,17 +52,17 @@ export class DashboardComponent implements OnInit {
   }
 
   addTask(): void {
-    if( !this.newTask.title || !this.newTask.description) return;
+    if (!this.newTask.title || !this.newTask.description) return;
 
     this.taskService.createTasks(this.newTask).subscribe({
-      next: (task) =>{
-        this.tasks.push(task);  // Add new task to the list
-        this.newTask = { title: '' , description: ''}; // reset the form
+      next: (task) => {
+        this.tasks.push(task); // Add new task to the list
+        this.newTask = { title: '', description: '' }; // reset the form
       },
-      error: (err) => console.error(err)
-    })
+      error: (err) => console.error(err),
+    });
   }
-  
+
   deleteTask(taskId: string): void {
     this.taskService.deleteTask(taskId).subscribe({
       next: () => {
@@ -74,35 +79,35 @@ export class DashboardComponent implements OnInit {
     this.editStatus = task.status;
   }
 
-  cancelEdit(): void{
+  cancelEdit(): void {
     this.editedTaskId = null;
   }
 
-  updateTask(id: string): void{
+  updateTask(id: string): void {
     const updated = {
       title: this.editTitle,
       description: this.editDescription,
-      status: this.editStatus
+      status: this.editStatus,
     };
 
     this.taskService.updateTask(id, updated).subscribe({
-      next: () =>{
+      next: () => {
         this.loadTasks(); // refreshes
         this.cancelEdit(); // exit edit mode
       },
-      error: err => console.error(err)
+      error: (err) => console.error(err),
     });
   }
 
-  openModal(){
+  openModal() {
     this.showModal = true;
   }
 
-  closeModal(){
+  closeModal() {
     this.showModal = false;
   }
 
-  onTaskAdded(){
+  onTaskAdded() {
     this.loadTasks();
   }
 }
