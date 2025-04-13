@@ -4,6 +4,7 @@
       <form [formGroup]="taskForm" (ngSubmit)="onSubmit()">
         <input type="text" formControlName="title" placeholder="Task Title" required />
         <textarea formControlName="description" placeholder="Task Description"></textarea>
+        <input type="date" [(ngModel)]="newTask.dueDate" placeholder="Due Date" />
         <select formControlName="status">
           <option value="pending">Pending</option>
           <option value="completed">Completed</option>

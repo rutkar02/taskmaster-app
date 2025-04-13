@@ -1,25 +1,39 @@
 <div class="dashboard">
   <h1>Welcome to Dashboard</h1>
   <button class="add-task-btn" (click)="openModal()">+ Add Task</button>
+  
   <app-add-task-modal
     *ngIf="showModal"
     (taskAdded)="onTaskAdded()"
     (closeModal)="closeModal()"
   ></app-add-task-modal>
-  
+
+  <!-- 🔽 Task Filter Dropdown -->
+  <div class="filter-container">
+    <label for="filter">Filter by status: </label>
+    <select id="filter" [(ngModel)]="filterStatus" (change)="applyFilter()">
+      <option value="">All</option>
+      <option value="pending">Pending</option>
+      <option value="completed">Completed</option>
+    </select>
+  </div>
+
+  <!-- 🔽 Task List -->
   <div class="task-list">
-    <div class="task-card" *ngFor="let task of tasks">
+    <div class="task-card" *ngFor="let task of filteredTasks">
       <ng-container *ngIf="editedTaskId !== task._id; else editMode">
         <h3>{{ task.title }}</h3>
         <p>{{ task.description }}</p>
         <p>Status: {{ task.status }}</p>
-        <div class="actions">
+        <p *ngIf="task.dueDate">Due Date: {{ task.dueDate | date }}</p>
+                <div class="actions">
           <button (click)="editTask(task)">Edit</button>
           <button (click)="deleteTask(task._id)">Delete</button>
         </div>
       </ng-container>
 
       <ng-template #editMode>
+        <input type="date" [(ngModel)]="editDueDate" />
         <input [(ngModel)]="editTitle" placeholder="Title" />
         <input [(ngModel)]="editDescription" placeholder="Description" />
         <select [(ngModel)]="editStatus">

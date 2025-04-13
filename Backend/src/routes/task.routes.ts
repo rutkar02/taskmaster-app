@@ -51,31 +51,41 @@ router.get("/tasks", authenticate, async (req, res) => {
 });
 
 // update tasks
-router.put('/tasks/:id', authenticate, async (req: Request, res: Response): Promise<void> => {
-  const { id } = req.params;
-  const { title, description, status } = req.body;
+router.put(
+  "/tasks/:id",
+  authenticate,
+  async (req: Request, res: Response): Promise<void> => {
+    const { id } = req.params;
+    const { title, description, status } = req.body;
+    const userId = (req as any).user.id;
 
-  const task = await Task.findByIdAndUpdate(id, { title, description, status }, { new: true });
+    const task = await Task.findOneAndUpdate(
+      { _id: id, userId },
+      { title, description, status },
+      { new: true }
+    );
 
-  if (!task) {
-    res.status(404).json({ message: 'Task not found' });
-    return;
+    if (!task) {
+      res.status(404).json({ message: "Task not found" });
+      return;
+    }
+
+    res.json(task);
   }
-
-  res.json(task);
-});
+);
 
 // delete tasks
-router.delete("/tasks/:id", authenticate, async(req,res)=>{
+router.delete("/tasks/:id", authenticate, async (req, res) => {
   const { id } = req.params;
-  const task = await Task.findByIdAndDelete(id);
+  const userId = (req as any).user.id;
+  const task = await Task.findOneAndDelete({_id: id, userId});
 
-  if(!task){
-    res.status(404).json({message: 'Task not found'});
+  if (!task) {
+    res.status(404).json({ message: "Task not found" });
     return;
   }
 
-  res.json({message: 'Task deleted'});
-})
+  res.json({ message: "Task deleted" });
+});
 
 export default router;

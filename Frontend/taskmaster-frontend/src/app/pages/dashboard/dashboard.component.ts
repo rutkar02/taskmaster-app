@@ -24,6 +24,9 @@ export class DashboardComponent implements OnInit {
   editDescription: string = '';
   editStatus: 'pending' | 'completed' = 'pending';
   showModal = false;
+  filterStatus: string = '';
+  filteredTasks: any[] = [];
+  editDueDate: string = '';
 
   constructor(
     private route: ActivatedRoute,
@@ -46,7 +49,10 @@ export class DashboardComponent implements OnInit {
 
   loadTasks(): void {
     this.taskService.getTasks().subscribe({
-      next: (tasks) => (this.tasks = tasks),
+      next: (tasks) => {
+        this.tasks = tasks;
+        this.applyFilter(); // apply filter after applying filter
+      },
       error: (err) => console.error('Failed to load tasks', err),
     });
   }
@@ -77,6 +83,7 @@ export class DashboardComponent implements OnInit {
     this.editTitle = task.title;
     this.editDescription = task.description;
     this.editStatus = task.status;
+    this.editDueDate = task.dueDate ??'';
   }
 
   cancelEdit(): void {
@@ -88,6 +95,7 @@ export class DashboardComponent implements OnInit {
       title: this.editTitle,
       description: this.editDescription,
       status: this.editStatus,
+      dueDate: this.editDueDate,
     };
 
     this.taskService.updateTask(id, updated).subscribe({
@@ -109,5 +117,23 @@ export class DashboardComponent implements OnInit {
 
   onTaskAdded() {
     this.loadTasks();
+  }
+
+  applyFilter() {
+    if(!this.filterStatus){
+      this.filteredTasks = this.tasks;
+    }
+    else{
+      this.filteredTasks = this.tasks.filter(tasks => tasks.status === this.filterStatus);
+    }
+  }
+
+  onTasksAdded() {
+    this.loadTasks();
+  }
+
+  onStatusChange(status: string): void{
+    this.filterStatus = status;
+    this.applyFilter();
   }
 }

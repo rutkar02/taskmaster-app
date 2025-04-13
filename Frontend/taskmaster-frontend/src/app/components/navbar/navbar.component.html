@@ -1,6 +1,7 @@
 <nav class="navbar">
     <div class="logo">TaskMaster</div>
     <div class="links">
+        <span *ngIf="userName">Hi, {{ userName }}</span>
         <a routerLink="/dashboard">Dashboard</a>
         <a routerLink="/profile">Profile</a>
         <a (click)="logout()">Logout</a>

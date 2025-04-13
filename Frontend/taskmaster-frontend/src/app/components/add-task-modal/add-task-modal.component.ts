@@ -20,6 +20,7 @@ export class AddTaskModalComponent {
       title: ['',Validators.required],
       description: [''],
       status: ['pending', Validators.required],
+      dueDate: ['']
     });
   }
 

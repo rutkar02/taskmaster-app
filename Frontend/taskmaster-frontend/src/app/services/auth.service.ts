@@ -24,5 +24,14 @@ export class AuthService {
 
   signInWithGoogle() {
     // Example: Redirect to your backend OAuth endpoint
-    window.location.href = 'http://localhost:5000/auth/google';  }
+    window.location.href = 'http://localhost:5000/auth/google';
+    }
+
+    getUserInfo() {
+      const token = this.getToken();
+      if(!token) return null;
+
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload;
+    }
 }
