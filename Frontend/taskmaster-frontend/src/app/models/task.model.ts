@@ -5,5 +5,6 @@ export interface Task {
     status: 'pending' | 'completed';
     userId: string;
     dueDate: string;
+    priority?: 'high' | 'medium' | 'low';
   }
   

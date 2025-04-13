@@ -29,7 +29,11 @@ const authenticate = (
 router.post("/", authenticate, async (req, res) => {
   try {
     const user = (req as any).user;
-    const task = await Task.create({ ...req.body, userId: user.id });
+    const task = await Task.create({
+      ...req.body,
+      userId: user.id,
+      priority: req.body.priority || "medium",
+    });
     res.json(task);
   } catch (err) {
     res.status(500).json({ error: "Failed to create task" });
@@ -56,12 +60,12 @@ router.put(
   authenticate,
   async (req: Request, res: Response): Promise<void> => {
     const { id } = req.params;
-    const { title, description, status } = req.body;
+    const { title, description, status, priority, dueDate } = req.body;
     const userId = (req as any).user.id;
 
     const task = await Task.findOneAndUpdate(
       { _id: id, userId },
-      { title, description, status },
+      { title, description, status, priority, dueDate },
       { new: true }
     );
 
@@ -78,7 +82,7 @@ router.put(
 router.delete("/tasks/:id", authenticate, async (req, res) => {
   const { id } = req.params;
   const userId = (req as any).user.id;
-  const task = await Task.findOneAndDelete({_id: id, userId});
+  const task = await Task.findOneAndDelete({ _id: id, userId });
 
   if (!task) {
     res.status(404).json({ message: "Task not found" });

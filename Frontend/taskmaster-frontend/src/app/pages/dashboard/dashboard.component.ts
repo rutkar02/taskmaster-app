@@ -7,11 +7,10 @@ import { CommonModule } from '@angular/common'; // 👈 for *ngIf, *ngFor
 import { FormsModule } from '@angular/forms'; // 👈 for [(ngModel)]
 import { AddTaskModalComponent } from '../../components/add-task-modal/add-task-modal.component';
 
-
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
-  imports: [CommonModule, FormsModule, AddTaskModalComponent],  // ✅ add this
+  imports: [CommonModule, FormsModule, AddTaskModalComponent], // ✅ add this
 })
 export class DashboardComponent implements OnInit {
   tasks: Task[] = [];
@@ -27,6 +26,8 @@ export class DashboardComponent implements OnInit {
   filterStatus: string = '';
   filteredTasks: any[] = [];
   editDueDate: string = '';
+  showOnlyUpcoming: boolean = false;
+  filterPriority: string = '';
 
   constructor(
     private route: ActivatedRoute,
@@ -50,7 +51,10 @@ export class DashboardComponent implements OnInit {
   loadTasks(): void {
     this.taskService.getTasks().subscribe({
       next: (tasks) => {
-        this.tasks = tasks;
+        this.tasks = tasks.sort(
+          (a: Task, b: Task) =>
+            new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
+        );
         this.applyFilter(); // apply filter after applying filter
       },
       error: (err) => console.error('Failed to load tasks', err),
@@ -83,7 +87,7 @@ export class DashboardComponent implements OnInit {
     this.editTitle = task.title;
     this.editDescription = task.description;
     this.editStatus = task.status;
-    this.editDueDate = task.dueDate ??'';
+    this.editDueDate = task.dueDate ?? '';
   }
 
   cancelEdit(): void {
@@ -120,20 +124,32 @@ export class DashboardComponent implements OnInit {
   }
 
   applyFilter() {
-    if(!this.filterStatus){
-      this.filteredTasks = this.tasks;
-    }
-    else{
-      this.filteredTasks = this.tasks.filter(tasks => tasks.status === this.filterStatus);
-    }
+    this.filteredTasks = this.tasks.filter((task) => {
+      const statusMatch =
+        !this.filterStatus || task.status === this.filterStatus;
+      const priorityMatch =
+        !this.filterPriority || task.priority === this.filterPriority;
+      const upcomingMatch =
+        !this.showOnlyUpcoming ||
+        (task.dueDate && new Date(task.dueDate) > new Date());
+
+      return statusMatch && priorityMatch && upcomingMatch;
+    });
   }
 
   onTasksAdded() {
     this.loadTasks();
   }
 
-  onStatusChange(status: string): void{
+  onStatusChange(status: string): void {
     this.filterStatus = status;
     this.applyFilter();
+  }
+
+  markAsCompleted(taskId: string): void {
+    this.taskService.updateTask(taskId, { status: 'completed' }).subscribe({
+      next: () => this.loadTasks(),
+      error: (err) => console.error('Failed to update task status', err),
+    });
   }
 }
