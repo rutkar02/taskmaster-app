@@ -6,11 +6,18 @@ import { Task } from '../../../app/models/task.model';
 import { CommonModule } from '@angular/common'; // 👈 for *ngIf, *ngFor
 import { FormsModule } from '@angular/forms'; // 👈 for [(ngModel)]
 import { AddTaskModalComponent } from '../../components/add-task-modal/add-task-modal.component';
+import { TaskStatsComponent } from '../../components/task-stats/task-stats.component';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
-  imports: [CommonModule, FormsModule, AddTaskModalComponent], // ✅ add this
+  styleUrls: ['./dashboard.component.scss'],
+  imports: [
+    CommonModule,
+    FormsModule,
+    AddTaskModalComponent,
+    TaskStatsComponent,
+  ], // ✅ add this
 })
 export class DashboardComponent implements OnInit {
   tasks: Task[] = [];
@@ -28,6 +35,8 @@ export class DashboardComponent implements OnInit {
   editDueDate: string = '';
   showOnlyUpcoming: boolean = false;
   filterPriority: string = '';
+  editPriority: 'low' | 'medium' | 'high' = 'medium';
+  searchQuery: string = '';
 
   constructor(
     private route: ActivatedRoute,
@@ -88,6 +97,7 @@ export class DashboardComponent implements OnInit {
     this.editDescription = task.description;
     this.editStatus = task.status;
     this.editDueDate = task.dueDate ?? '';
+    this.editPriority = task.priority || 'medium';
   }
 
   cancelEdit(): void {
@@ -100,6 +110,7 @@ export class DashboardComponent implements OnInit {
       description: this.editDescription,
       status: this.editStatus,
       dueDate: this.editDueDate,
+      priority: this.editPriority,
     };
 
     this.taskService.updateTask(id, updated).subscribe({
@@ -123,6 +134,14 @@ export class DashboardComponent implements OnInit {
     this.loadTasks();
   }
 
+  get completedTasksCount(): number {
+    return this.tasks.filter((task) => task.status === 'completed').length;
+  }
+
+  get pendingTasksCount(): number {
+    return this.tasks.filter((task) => task.status !== 'completed').length;
+  }
+
   applyFilter() {
     this.filteredTasks = this.tasks.filter((task) => {
       const statusMatch =
@@ -132,8 +151,11 @@ export class DashboardComponent implements OnInit {
       const upcomingMatch =
         !this.showOnlyUpcoming ||
         (task.dueDate && new Date(task.dueDate) > new Date());
-
-      return statusMatch && priorityMatch && upcomingMatch;
+      const searchMatch =
+        !this.searchQuery ||
+        task.title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+        task.description.toLowerCase().includes(this.searchQuery.toLowerCase());
+      return statusMatch && priorityMatch && upcomingMatch && searchMatch;
     });
   }
 

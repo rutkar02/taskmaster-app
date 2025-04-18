@@ -25,7 +25,7 @@ app.get('/', (req, res) => {
 });
 app.use('/auth', authRoutes);
 app.use('/api/user', userRoutes);
-app.use('/api',taskRoutes)
+app.use('/api/tasks',taskRoutes)
 
 // MongoDB Connection
 mongoose

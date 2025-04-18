@@ -1,6 +1,12 @@
 <div class="dashboard">
   <h1>Welcome to Dashboard</h1>
   <button class="add-task-btn" (click)="openModal()">+ Add Task</button>
+  <app-task-stats
+  [totalTasks]="tasks.length"
+  [completedTasks]="completedTasksCount"
+  [pendingTasks]="pendingTasksCount"
+></app-task-stats>
+
 
   <app-add-task-modal
     *ngIf="showModal"
@@ -34,6 +40,16 @@
     Show only upcoming tasks
   </label>
 
+  <label>
+    Search:
+    <input
+      type="text"
+      [(ngModel)]="searchQuery"
+      (input)="applyFilter()"
+      placeholder="Search by title or description"
+    />
+  </label>
+  
   <!-- 🔽 Task List -->
   <div class="task-list">
     <div
@@ -44,7 +60,7 @@
         'medium-priority': task.priority === 'medium',
         'low-priority': task.priority === 'low'
       }"
-    >
+    >  
       <ng-container *ngIf="editedTaskId !== task._id; else editMode">
         <!-- ✅ Quick Complete Button -->
         <button
@@ -75,6 +91,7 @@
         <input type="date" [(ngModel)]="editDueDate" />
         <input [(ngModel)]="editTitle" placeholder="Title" />
         <input [(ngModel)]="editDescription" placeholder="Description" />
+
         <select [(ngModel)]="editStatus">
           <option value="pending">Pending</option>
           <option value="completed">Completed</option>
@@ -93,5 +110,8 @@
         </div>
       </ng-template>
     </div>
+    <div *ngIf="filteredTasks.length === 0" class="no-tasks-message">
+      No tasks found.
+    </div>  
   </div>
 </div>

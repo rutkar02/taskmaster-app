@@ -1,0 +1,45 @@
+.profile-container {
+    padding: 2rem;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  .user-info {
+    margin-bottom: 2rem;
+  }
+  
+  form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  label {
+    margin-bottom: 0.5rem;
+  }
+  
+  input {
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  button {
+    padding: 0.7rem;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  button[disabled] {
+    background-color: #ccc;
+  }
+  
+  .message {
+    margin-top: 1rem;
+    color: green;
+    font-weight: bold;
+  }
+  

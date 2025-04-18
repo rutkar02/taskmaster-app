@@ -1,6 +1,24 @@
-<div *ngIf="user">
-    <h2>Profile</h2>
-    <p><strong>ID:</strong> {{ user.id }}</p>
+<div class="profile">
+  <h2>User Profile</h2>
+
+  <!-- <div *ngIf="user$ | async as user">
+    <p><strong>Name:</strong> {{ user.name }}</p>
     <p><strong>Email:</strong> {{ user.email }}</p>
-  </div>
+  </div> -->
+<!-- 
+  <form *ngIf="user" (ngSubmit)="UpdateProfile()" #profileForm="ngForm">
+    <label for="name">Name:</label>
+    <input type="text" id="name" [(ngModel)]="user.name" name="name" required />
+    <label for="email">Email:</label>
+    <input
+      type="email"
+      id="email"
+      [(ngModel)]="user.email"
+      name="email"
+      required
+    />
+    <button type ="submit" [disabled]="profileForm.invalid">Update Profile</button>
+  </form> -->
   
+  <div *ngIf="message" class="message">{{ message }}</div>
+</div>

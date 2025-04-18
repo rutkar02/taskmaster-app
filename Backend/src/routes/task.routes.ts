@@ -4,6 +4,7 @@ import Task from "../models/task.model";
 
 const router = Router();
 
+// ✅ Middleware to authenticate JWT token
 const authenticate = (
   req: Request,
   res: Response,
@@ -26,6 +27,7 @@ const authenticate = (
   }
 };
 
+// ✅ POST /api/tasks (Create new task)
 router.post("/", authenticate, async (req, res) => {
   try {
     const user = (req as any).user;
@@ -34,52 +36,41 @@ router.post("/", authenticate, async (req, res) => {
       userId: user.id,
       priority: req.body.priority || "medium",
     });
-    res.json(task);
+    res.status(201).json(task);
   } catch (err) {
     res.status(500).json({ error: "Failed to create task" });
   }
 });
 
-// Get tasks for user
+// ✅ GET /api/tasks (Get all tasks for logged-in user)
 router.get("/", authenticate, async (req, res) => {
   const user = (req as any).user;
   const tasks = await Task.find({ userId: user.id });
   res.json(tasks);
 });
 
-// get tasks
-router.get("/tasks", authenticate, async (req, res) => {
+// ✅ PUT /api/tasks/:id (Update a task)
+router.put("/:id", authenticate, async (req, res) => {
+  const { id } = req.params;
+  const { title, description, status, priority, dueDate } = req.body;
   const userId = (req as any).user.id;
-  const tasks = await Task.find({ userId });
-  res.json(tasks);
+
+  const task = await Task.findOneAndUpdate(
+    { _id: id, userId },
+    { title, description, status, priority, dueDate },
+    { new: true }
+  );
+
+  if (!task) {
+    res.status(404).json({ message: "Task not found" });
+    return;
+  }
+
+  res.json(task);
 });
 
-// update tasks
-router.put(
-  "/tasks/:id",
-  authenticate,
-  async (req: Request, res: Response): Promise<void> => {
-    const { id } = req.params;
-    const { title, description, status, priority, dueDate } = req.body;
-    const userId = (req as any).user.id;
-
-    const task = await Task.findOneAndUpdate(
-      { _id: id, userId },
-      { title, description, status, priority, dueDate },
-      { new: true }
-    );
-
-    if (!task) {
-      res.status(404).json({ message: "Task not found" });
-      return;
-    }
-
-    res.json(task);
-  }
-);
-
-// delete tasks
-router.delete("/tasks/:id", authenticate, async (req, res) => {
+// ✅ DELETE /api/tasks/:id (Delete a task)
+router.delete("/:id", authenticate, async (req, res) => {
   const { id } = req.params;
   const userId = (req as any).user.id;
   const task = await Task.findOneAndDelete({ _id: id, userId });
